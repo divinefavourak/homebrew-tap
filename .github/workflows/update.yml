@@ -1,0 +1,30 @@
+# Keeps Casks/jesutobits.rb on the latest Jesutobits release (daily, or by hand after a release).
+name: Update the cask
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Write the cask for the latest release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/update-cask.sh
+      - name: Commit if it changed
+        run: |
+          git add Casks/jesutobits.rb
+          if git diff --cached --quiet; then
+            echo "Already up to date"
+          else
+            git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -m "jesutobits $(grep -m1 '^  version' Casks/jesutobits.rb | cut -d'"' -f2)"
+            git push
+          fi

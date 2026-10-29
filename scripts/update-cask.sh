@@ -18,6 +18,8 @@ sum() {
 ARM=$(sum arm64)
 INTEL=$(sum x64)
 
+mkdir -p Casks
+
 cat > Casks/jesutobits.rb <<EOF
 cask "jesutobits" do
   arch arm: "arm64", intel: "x64"
